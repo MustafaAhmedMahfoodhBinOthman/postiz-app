@@ -35,5 +35,5 @@ RUN addgroup --system www \
 EXPOSE 5000
 
 # Frontend is built at startup so NEXT_PUBLIC_* env vars are baked in correctly.
-# Then nginx starts and all three services run under pm2.
-CMD ["sh", "-c", "NODE_OPTIONS='--max-old-space-size=4096' pnpm run build:frontend && nginx && pnpm run pm2-run"]
+# Prisma schema is pushed to the DB, then pm2-runtime keeps all services alive.
+CMD ["sh", "-c", "NODE_OPTIONS='--max-old-space-size=4096' pnpm run build:frontend && NODE_OPTIONS='--max-old-space-size=4096' pnpm run prisma-db-push && pm2-runtime start /app/var/docker/ecosystem.config.cjs"]
