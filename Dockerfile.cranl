@@ -15,23 +15,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Copy workspace definition and lockfile first for better layer caching
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
-
-# Copy source
-COPY apps ./apps
-COPY libraries ./libraries
-COPY var ./var
-COPY dynamicconfig ./dynamicconfig
+# Copy entire repo (monorepo structure must be preserved for tsconfig paths)
+COPY . /app
+COPY var/docker/nginx.conf /etc/nginx/nginx.conf
 
 # Install dependencies
 RUN NODE_OPTIONS="--max-old-space-size=4096" pnpm install
 
 # Build backend and orchestrator (no NEXT_PUBLIC variables needed here)
-RUN pnpm run build:backend && pnpm run build:orchestrator
+RUN NODE_OPTIONS="--max-old-space-size=4096" pnpm run build:backend && NODE_OPTIONS="--max-old-space-size=4096" pnpm run build:orchestrator
 
 # Nginx setup
-COPY var/docker/nginx.conf /etc/nginx/nginx.conf
 RUN addgroup --system www \
     && adduser --system --ingroup www --home /www --shell /usr/sbin/nologin www \
     && mkdir -p /uploads \
