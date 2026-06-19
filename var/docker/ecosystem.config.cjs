@@ -10,6 +10,8 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
       },
+      min_uptime: '10s',
+      max_restarts: 10,
     },
     {
       name: 'backend',
@@ -23,12 +25,15 @@ module.exports = {
         NODE_ENV: 'production',
       },
       max_memory_restart: '1G',
+      min_uptime: '10s',
+      max_restarts: 10,
+      restart_delay: 3000,
     },
     {
       name: 'frontend',
       cwd: '/app/apps/frontend',
-      script: 'pnpm',
-      args: 'run start',
+      script: 'sh',
+      args: '-c "sleep 10 && pnpm run start"',
       autorestart: true,
       exec_mode: 'fork',
       instances: 1,
@@ -36,6 +41,9 @@ module.exports = {
         NODE_ENV: 'production',
       },
       max_memory_restart: '1G',
+      min_uptime: '10s',
+      max_restarts: 10,
+      restart_delay: 3000,
     },
     {
       name: 'orchestrator',
@@ -49,6 +57,9 @@ module.exports = {
         NODE_ENV: 'production',
       },
       max_memory_restart: '1G',
+      min_uptime: '10s',
+      max_restarts: 10,
+      restart_delay: 5000,
     },
   ],
 };
